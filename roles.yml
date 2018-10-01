@@ -1,0 +1,12 @@
+- hosts: test
+  roles:
+    - { role: apache }
+
+  tasks:
+   - name: copy index.html from template
+     template:
+       src: /root/templates/index.html.j2
+       dest: /var/www/example.com/public_html/index.html
+       owner: root
+       group: root
+       mode: 0644

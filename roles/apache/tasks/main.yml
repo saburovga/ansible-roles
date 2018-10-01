@@ -1,0 +1,81 @@
+   - name: disable firewalld service on system start up
+     systemd:
+       name: firewalld
+       enabled: no
+
+   - name: stop firewalld service
+     systemd:
+       name: firewalld
+       state: stopped
+
+   - name: install httpd
+     yum:
+       name: httpd
+       state: latest
+
+   - name: enable httpd on system start up
+     systemd:
+       name: httpd
+       enabled: yes
+
+   - name: start httpd service
+     systemd:
+       name: httpd
+       state: started
+
+   - name: enable httpd on system start up
+     systemd:
+       name: httpd
+       enabled: yes
+
+   - name: start httpd service
+     systemd:
+       name: httpd
+       state: started
+
+   - name: copy httpd.conf
+     copy:
+       src: httpd.conf
+       dest: /etc/httpd/conf
+       owner: root
+       group: root
+       mode: 0644
+     notify:
+       - restart apache
+
+   - name: create a directory sites-available
+     file:
+       path: /etc/httpd/sites-available
+       state: directory
+       mode: 0755
+
+   - name: create a directory sites-enabled
+     file:
+       path: /etc/httpd/sites-enabled
+       state: directory
+       mode: 0755
+
+
+   - name: create a directory example.com
+     file:
+       path: /var/www/example.com/public_html
+       state: directory
+       mode: 0755
+
+   - name: copy example.com conf file from template
+     template:
+       src: example.com.conf.j2
+       dest: /etc/httpd/sites-available/example.com.conf
+       owner: root
+       group: root
+       mode: 0644
+     notify:
+       - restart apache
+
+   - name: create a symlink example.com
+     file:
+       src: /etc/httpd/sites-available/example.com.conf
+       dest: /etc/httpd/sites-enabled/example.com.conf
+       state: link
+     notify:
+       - restart apache
